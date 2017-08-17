@@ -5,16 +5,17 @@ using System.Linq;
 using System.Web;
 using System.Data.SqlClient;
 using System.Data;
+using System.Configuration;
 
 namespace DapperMVCCRUD.Models
 {
     public static class DapperORM
     {
-        private static string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=mockupDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+       // private static string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=mockupDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
         public static void ExecuteWithoutReturn(string procedureName, DynamicParameters param=null)
         {
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SqlConnection sqlCon = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
                 sqlCon.Open();
                 sqlCon.Execute(procedureName, param, commandType: CommandType.StoredProcedure);
@@ -24,7 +25,7 @@ namespace DapperMVCCRUD.Models
         //DapperORM.ExecuteReturnScalar<int>(_,_)
         public static T ExecuteReturnScalar<T>(string procedureName, DynamicParameters param=null)
         {
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SqlConnection sqlCon = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
                 sqlCon.Open();
                 return (T)Convert.ChangeType(sqlCon.Execute(procedureName, param, commandType: CommandType.StoredProcedure), typeof(T));
@@ -34,7 +35,7 @@ namespace DapperMVCCRUD.Models
         //DapperORM.ReturnList<EmployeeModel> <= IEnumerable<EmployeeModel>
         public static IEnumerable<T> ReturnList<T>(string procedureName, DynamicParameters param=null)
         {
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SqlConnection sqlCon = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
                 sqlCon.Open();
                 return sqlCon.Query<T>(procedureName, param, commandType: CommandType.StoredProcedure);
